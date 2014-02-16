@@ -41,7 +41,7 @@ class UpdateSeries(webapp2.RequestHandler):
         # Now get the corresponding id from ListSeries
 
         lsquery = ListSeries.all()
-        lsquery.filter("slno =", str(iterator))
+        lsquery.filter("slno =", iterator)
         serial = lsquery.get()
         
         stvid = serial.tvid
