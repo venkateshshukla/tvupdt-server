@@ -9,8 +9,6 @@ handlers:
   script: update.application
 - url: /addseries
   script: addseries.application
-- url: /addtotaldb
-  script: addtotaldb.application
 - url: /favicon\.ico
   static_files: static/images/favicon.ico
   upload: static/images/favicon\.ico

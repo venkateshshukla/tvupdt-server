@@ -37,7 +37,7 @@ class UpdateSeries(webapp2.RequestHandler):
             iterator = 1
 
         memcache.set('iterator', iterator)
-        logging.info("New Iterator Value " + iterator)
+        logging.info("New Iterator Value " + str(iterator))
         # Now get the corresponding id from ListSeries
 
         lsquery = ListSeries.all()
