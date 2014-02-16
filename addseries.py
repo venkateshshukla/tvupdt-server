@@ -5,7 +5,7 @@ from databases import Series, ListSeries, Total
 
 class AddSeries(webapp2.RequestHandler):
     def post(self):
-        data = self.params
+        data = self.request.params
         auth = data['auth']
         if auth != 'NarutoStark':
             self.response.write('Unauthorised Request.')
