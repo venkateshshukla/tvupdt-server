@@ -38,9 +38,9 @@ class Series(db.Model):
 This class contains the Series whose next episodes are to be found out.
 '''
 class ListSeries(db.Model):
-    tvid = db.StringProperty(required=True)
+    tvid = db.StringProperty()
     slno = db.IntegerProperty()
-    title = db.StringProperty(required=True)
+    title = db.StringProperty()
 
 class UserPrefs(db.Model):
     regid = db.StringProperty(required=True)
