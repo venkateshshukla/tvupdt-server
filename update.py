@@ -25,7 +25,7 @@ class UpdateSeries(webapp2.RequestHandler):
 
         if iterator is None:                    # In case there is no iterator, make an iterator and initialise with value 0
             iterator = 0
-            memcache.set('iterator',iterator)
+            memcache.add('iterator',iterator)
 
         if total is None:                       # In case there is no total in the memcache, get total from datastore and add to memcache
             db_total = Total.all().get()
