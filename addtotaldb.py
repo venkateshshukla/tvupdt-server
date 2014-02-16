@@ -3,9 +3,9 @@ from google.appengine.ext import db
 from databases import Total
 
 class AddTotalDb(webapp2.RequestHandler):
-    def get(self):
+    def post(self):
         logging.info('POST recieved')
-        q = Total(0)
+        q = Total(total=0)
         q.put()
         logging.info('O stored in Total')
         
