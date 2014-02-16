@@ -3,7 +3,7 @@ from google.appengine.ext import db
 from databases import Total
 
 class AddTotalDb(webapp2.RequestHandler):
-    def post(self):
+    def get(self):
         logging.info('POST recieved')
         q = Total(total=0)
         q.put()
