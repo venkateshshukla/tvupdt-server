@@ -6,19 +6,15 @@ from databases import Series, ListSeries, Total
 class AddSeries(webapp2.RequestHandler):
     def post(self):
         data = self.request.params
-        auth = data['auth']
-        if auth != 'NarutoStark':
+        if 'auth' not in data.keys():
             self.response.write('Unauthorised Request.')
         else:
-            num = data['num']
-            logging.info('Recieved ' + str(num) + ' Entries')
-            
-            allseries = data['allseries']
-            for series in allseries:
-                title = series['title']
-                tvid = series['tvid']
-                logging.info('title = ' + title)
-                logging.info('tvid = ' + tvid)
+            auth = data['auth']
+            if auth != 'NarutoStark':
+                self.response.write('Unauthorised Request.')
+            else:
+                logging.info('Recieved an Entry')
+
                 # Get total number of series in use from memcache. If unavailable try datastore
                 mem_total = memcache.get('total')
                 db_total_entry = Total.all().get()
@@ -26,17 +22,20 @@ class AddSeries(webapp2.RequestHandler):
                 logging.debug('old mem_total = ' + str(mem_total))
                 logging.debug('old db_total = ' + str(db_total))
                 if mem_total is None:
-                    slno = db_total +1
+                    old_total = db_total
+                    new_total = db_total + 1
                     logging.debug('No total in memcache. Using datastore')
                 else:
-                    slno = total + 1
+                    old_total = mem_total
+                    new_total = mem_total + 1
                     logging.debug('total found in memcache')
-                logging.debug('slno = ' + str(slno))
-                db_total_entry.total = slno
-                db_total_entry.put()
-                memcache.put('total', slno)
-                logging.debug('Put new total in memcache and db')
                 # End
+                
+                title   = data['title']
+                tvid    = data['tvid']
+                slno    = old_total + i
+                logging.info('title = ' + title)
+                logging.info('tvid = ' + tvid)
 
                 # Put the given series in ListSeries
                 listseries = ListSeries(tvid=tvid, title=title)
@@ -57,6 +56,15 @@ class AddSeries(webapp2.RequestHandler):
                 db_series.put()
                 logging.info('Entry put in Series database')
                 #End
+
+                # Now put the updated value in datastore and memcache
+                logging.debug('slno = ' + str(newtotal))
+                db_total_entry.total = newtotal
+                db_total_entry.put()
+                memcache.put('total', newtotal)
+                logging.debug('Put new total in memcache and db')
+                # End
+                
                 self.response.write(title + ' put into the database.\n')
-        
+
 application= webapp2.WSGIApplication([("/addseries",AddSeries),],debug=True)
