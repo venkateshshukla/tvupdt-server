@@ -98,15 +98,4 @@ class UpdateSeries(webapp2.RequestHandler):
 
         logging.info(" Updated data written to Datastore")
 
-
-    '''
-    On receiving a POST request, the Iteratoe is reset to value 1
-    '''
-    def post(self):
-        logging.info("POST Request received for Update")
-        i = Iter(iterator=1).put()
-        logging.info("iterator reset to 1")
-        self.response.write("Reset to 1")
-
-
 application= webapp2.WSGIApplication([("/update",UpdateSeries),],debug=True)
