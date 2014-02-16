@@ -1,4 +1,4 @@
-
+from google.appengine.ext import db
 '''
 This class contains the main database of the application. In this database, there are following entries
 
