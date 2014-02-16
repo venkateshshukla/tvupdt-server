@@ -1,0 +1,14 @@
+application: tvupdt
+version: 11
+runtime: python27
+api_version: 1
+threadsafe: true
+
+handlers:
+- url: /update
+  script: update.application
+- url: /addseries
+  script: addseries.application
+- url: /favicon\.ico
+  static_files: static/images/favicon.ico
+  upload: static/images/favicon\.ico

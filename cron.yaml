@@ -1,0 +1,5 @@
+cron:
+- description: Update Database repeatedly
+  url: /update
+  schedule: every 2 minutes
+  timezone: Asia/Kolkata
