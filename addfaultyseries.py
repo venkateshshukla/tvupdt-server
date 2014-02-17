@@ -1,9 +1,9 @@
 import webapp2, logging
 from google.appengine.ext import db
 from google.appengine.api import memcache
-from Databases import Series, ListSeries, Total
+from FaultyDatabases import FaultySeries, FaultyListSeries, FaultyTotal
 
-class AddSeries(webapp2.RequestHandler):
+class AddFaultySeries(webapp2.RequestHandler):
     def post(self):
         data = self.request.params
         if 'auth' not in data.keys():
@@ -18,8 +18,8 @@ class AddSeries(webapp2.RequestHandler):
                 logging.info('Recieved an Entry')
 
                 # Get total number of series in use from memcache. If unavailable try datastore
-                mem_total = memcache.get('total')
-                db_total_entry = Total.all().get()
+                mem_total = memcache.get('faultytotal')
+                db_total_entry = FaultyTotal.all().get()
                 db_total = db_total_entry.total
                 logging.debug('old mem_total = ' + str(mem_total))
                 logging.debug('old db_total = ' + str(db_total))
@@ -38,25 +38,25 @@ class AddSeries(webapp2.RequestHandler):
                 logging.info('tvid = ' + str(tvid))
 
                 # Put the given series in ListSeries after checking if its already present
-                lsquery = ListSeries.all()
+                lsquery = FaultyListSeries.all()
                 lsquery.filter('tvid =', tvid)
                 lsout = lsquery.get()
                 if lsout is None:
-                    listseries = ListSeries(tvid=tvid, title=title)
+                    listseries = FaultyListSeries(tvid=tvid, title=title)
                     listseries.slno = slno
                     listseries.put()
-                    logging.info('Entry put in ListSeries database')
+                    logging.info('Entry put in FaultyListSeries database')
                     # End
 
                     # Put the given series in Series after checking if its already present
                     # If already present then, reset the values
-                    squery = Series.all()
+                    squery = FaultySeries.all()
                     squery.filter('tvid =', tvid)
                     sout = squery.get()
                     if sout is not None:
                         db_series = sout
                     else:
-                        db_series = Series(tvid=tvid, title=title)
+                        db_series = FaultySeries(tvid=tvid, title=title)
                     db_series.status    = -1            #Default
                     db_series.rely      = 99            #Default
                     db_series.epname    = 'None'        #Default
@@ -65,20 +65,20 @@ class AddSeries(webapp2.RequestHandler):
                     db_series.up_cycle  = 0             #Default
                     db_series.comments  = 'No Comments' #Default
                     db_series.put()
-                    logging.info('Entry put in Series database')
+                    logging.info('Entry put in FaultySeries database')
                     #End
 
                     # Now put the updated value in datastore and memcache
                     logging.debug('slno = ' + str(total))
                     db_total_entry.total = total
                     db_total_entry.put()
-                    memcache.set('total', total)
+                    memcache.set('faultytotal', total)
                     logging.debug('Put new total in memcache and db')
                     # End
                     
-                    self.response.write(title + ' put into the database.\n')
+                    self.response.write(title + ' put into the faultydatabase.\n')
                 else:
-                    self.response.write('The series is already present in ListSeries database')
-                    logging.error('Series already in ListSeries database')
+                    self.response.write('The series is already present in FaultyListSeries database')
+                    logging.error('Series already in FaultyListSeries database')
 
-application= webapp2.WSGIApplication([("/addseries",AddSeries),],debug=True)
+application= webapp2.WSGIApplication([("/addfaultyseries",AddFaultySeries),],debug=True)

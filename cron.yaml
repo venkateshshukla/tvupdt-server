@@ -3,3 +3,7 @@ cron:
   url: /update
   schedule: every 2 minutes
   timezone: Asia/Kolkata
+- description: Update FaultyDatabase repeatedly
+  url: /updatefaulty
+  schedule: every 2 minutes
+  timezone: Asia/Kolkata

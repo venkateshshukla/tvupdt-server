@@ -4,9 +4,9 @@ import webapp2, logging, imdb
 from google.appengine.ext import db
 from google.appengine.api import memcache
 from NextEp import getNextEp
-from Databases import Series, ListSeries, Total
+from FaultyDatabases import FaultySeries, FaultyListSeries, FaultyTotal
 
-class UpdateSeries(webapp2.RequestHandler):
+class UpdateFaultySeries(webapp2.RequestHandler):
     '''
     On receiving a GET request (From a cron job mainly) these steps are undertaken
 
@@ -17,27 +17,27 @@ class UpdateSeries(webapp2.RequestHandler):
     def get(self):
         logging.info("Received a GET Request")
 
-        iterator = memcache.get('iterator')     #Get value of iterator in memcache
-        total = memcache.get('total')           #Get value of total in memcache
+        iterator = memcache.get('faultyiterator')     #Get value of iterator in memcache
+        total = memcache.get('faultytotal')           #Get value of total in memcache
 
         if iterator is None:                    # In case there is no iterator, make an iterator and initialise with value 0
             iterator = 0
-            memcache.add('iterator',iterator)
+            memcache.add('faultyiterator',iterator)
 
         if total is None:                       # In case there is no total in the memcache, get total from datastore and add to memcache
-            db_total = Total.all().get()
+            db_total = FaultyTotal.all().get()
             total = db_total.total
-            memcache.add('total', total)
+            memcache.add('faultytotal', total)
 
         iterator = iterator + 1                 #Incrementing the iterator and reset if equal to max
         if(iterator >= total+1):
             iterator = 1
 
-        memcache.set('iterator', iterator)
+        memcache.set('faultyiterator', iterator)
         logging.info("New Iterator Value " + str(iterator))
         # Now get the corresponding id from ListSeries
 
-        lsquery = ListSeries.all()
+        lsquery = FaultyListSeries.all()
         lsquery.filter("slno =", iterator)
         serial = lsquery.get()
         
@@ -77,11 +77,11 @@ class UpdateSeries(webapp2.RequestHandler):
             logging.info("Last Known Episode date " + epDate)
             logging.info("Comments " + epComments)
 
-        Ser = Series.all()
+        Ser = FaultySeries.all()
         Ser.filter('tvid = ', str(stvid))
         ser1 = Ser.get()
 
-        logging.info("entry extracted from datastore")
+        logging.info("entry extracted from FaultyDatastore")
 
         ser1.status = epStat
         ser1.rely = epRely
@@ -93,6 +93,6 @@ class UpdateSeries(webapp2.RequestHandler):
 
         ser1.put()
 
-        logging.info(" Updated data written to Datastore")
+        logging.info(" Updated data written to FaultyDatastore")
 
-application= webapp2.WSGIApplication([("/update",UpdateSeries),],debug=True)
+application= webapp2.WSGIApplication([("/updatefaulty",UpdateFaultySeries),],debug=True)

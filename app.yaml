@@ -7,8 +7,12 @@ threadsafe: true
 handlers:
 - url: /update
   script: update.application
+- url: /updatefaulty
+  script: updatefaulty.application
 - url: /addseries
   script: addseries.application
+- url: /addfaultyseries
+  script: addfaultyseries.application
 - url: /favicon\.ico
   static_files: static/images/favicon.ico
   upload: static/images/favicon\.ico
