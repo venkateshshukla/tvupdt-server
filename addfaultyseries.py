@@ -20,10 +20,19 @@ class AddFaultySeries(webapp2.RequestHandler):
                 # Get total number of series in use from memcache. If unavailable try datastore
                 mem_total = memcache.get('faultytotal')
                 db_total_entry = FaultyTotal.all().get()
-                db_total = db_total_entry.total
+                if db_total_entry is not None:
+                    db_total = db_total_entry.total
+                    logging.debug('old db_total = ' + str(db_total))
+                else:
+                    db_tot = FaultyTotal(total = 0)
+                    db_tot.put()
+                    logging.debug('added entry 0 in FaultyTotal db')
+                    mem_total = 0
+                    db_total_entry = FaultyTotal.all().get()
                 logging.debug('old mem_total = ' + str(mem_total))
-                logging.debug('old db_total = ' + str(db_total))
-                if mem_total is None:
+                if mem_total is None and (db_total_entry is None or db_total is None):
+                    total = 1
+                elif mem_total is None:
                     total = db_total + 1
                     logging.debug('No total in memcache. Using datastore')
                 else:
