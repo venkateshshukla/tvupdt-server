@@ -31,6 +31,7 @@ class FaultySeries(db.Model):
     epdate = db.StringProperty()
     rely = db.IntegerProperty()
     up_cycle = db.IntegerProperty()
+    up_time = db.DateTimeProperty(auto_now=True)
     comments = db.StringProperty()
 
 
