@@ -19,4 +19,4 @@ handlers:
   
 libraries:
 - name: lxml
-  version: "latest"
+  version: latest
